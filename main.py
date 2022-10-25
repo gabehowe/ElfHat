@@ -1,15 +1,20 @@
 # 10 names
 # 5 people
 # who gets what?
+import datetime
 import os
-import sys
-from pathlib import Path
-from random import randint
 import os.path as ospath
+import sys
+from random import randint
+from typing import Tuple
+
+from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
+
 # initialize names
-names = ['T', 'K', 'S', 'G', 'D']
-taken = {'T': 0, 'K': 0, 'S': 0, 'G': 0, 'D': 0}
-values = {'T': [], 'K': [], 'S': [], 'G': [], 'D': []}
+names = ['Thomas', 'Katie', 'Sammy', 'Gabe', 'Dahlia']
+taken = {'Thomas': 0, 'Katie': 0, 'Sammy': 0, 'Gabe': 0, 'Dahlia': 0}
+values = {'Thomas': [], 'Katie': [], 'Sammy': [], 'Gabe': [], 'Dahlia': []}
 
 
 def check_taken(roller_name: str):
@@ -41,29 +46,66 @@ def roll(roller_name: str):
             return [first_name, second_name]
 
 
-while True:
-    for i in names:
-        rolled = roll(i)
-        if rolled is None:
-            for o in taken.keys():
-                taken[o] = 0
-            for a in values.keys():
-                values[a] = 0
-            break
+def draw_centered(draw: ImageDraw, message: str, x: float, y: float, font: FreeTypeFont,
+                  color: Tuple[int, int, int] = (255, 0, 0)):
+    _, _, w, h = draw.textbbox((0, 0), message, font=font)
+    draw.text(((x - (w / 2)), (y - (h / 2))), message, font=font, fill=color)
 
-        first_name, second_name = rolled
-        values[i] = [first_name, second_name]
-        if i == names[-1]:
-            for p in values.keys():
-                first, second = values[p]
-                path = f'./values/{p}.txt'
-                if not ospath.isdir('./values'):
-                    os.mkdir('./values')
-                if os.path.isfile(path):
-                    with open(path, 'w+') as file:
-                        file.write(f'Your people are: {first} and {second}')
-                else:
-                    with open(path, 'x+') as file:
-                        file.write(f'Your people are: {first} and {second}')
 
-            sys.exit()
+def main():
+    while True:
+        for i in names:
+            rolled = roll(i)
+            if rolled is None:
+                for o in taken.keys():
+                    taken[o] = 0
+                for a in values.keys():
+                    values[a] = 0
+                break
+
+            first_name, second_name = rolled
+            values[i] = [first_name, second_name]
+            if i == names[-1]:
+                for p in values.keys():
+                    first, second = values[p]
+                    path = f'./values/{p}.png'
+                    if not ospath.isdir('./values'):
+                        os.mkdir('./values')
+                    if os.path.isfile(path):
+                        img = Image.open('./template.png')
+                        drawer = ImageDraw.Draw(img)
+                        a_bold = ImageFont.truetype('./arialbd.ttf', 50)
+                        a_reg = ImageFont.truetype('./arial.ttf', 30)
+                        a_bold_big = ImageFont.truetype('./arialbd.ttf', 100)
+                        color = (255, 255, 255)
+                        draw_centered(drawer, f'Your people are {first} and {second}.', img.width / 2, img.height / 2,
+                                      a_bold, color)
+                        draw_centered(drawer, f'{p}', img.width / 2, img.height * 0.3, a_bold_big, color)
+                        drawer.text((img.width * 0.05, img.height * 0.86),
+                                    f'Generated on {datetime.datetime.now().utcnow().strftime("%B %d, %Y at %H:%M:%S")}',
+                                    font=a_reg, fill=color)
+                        drawer.text((img.width * 0.05, img.height * 0.9),
+                                    f'Powered by ElfHat, an open source project by Gabriel Howe.',
+                                    font=a_reg, fill=color)
+
+                        img.save(path)
+
+                        # with open(path, 'w+') as file:
+                        #     space_length = 0
+                        #     spaces = ''
+                        #     for e in range(space_length):
+                        #         spaces += '\n'
+                        #
+                        #     file.writelines([spaces,
+                        #                      f'Your people are {first} and {second}.\n',
+                        #                      f'Generated on {datetime.datetime.now().strftime("%B %d, %Y at %H:%M:%S")}.\n',
+                        #                      f'Powered by ElfHat, an open source project by Gabriel Howe.\n'])
+                    else:
+                        with open(path, 'x+') as file:
+                            file.write(f'Your people are: {first} and {second}')
+
+                sys.exit()
+
+
+if __name__ == '__main__':
+    main()
