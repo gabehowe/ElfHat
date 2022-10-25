@@ -52,6 +52,28 @@ def draw_centered(draw: ImageDraw, message: str, x: float, y: float, font: FreeT
     draw.text(((x - (w / 2)), (y - (h / 2))), message, font=font, fill=color)
 
 
+def generate_image(title: str, subtitle: str, location: os.path):
+    if not ospath.isdir('./values'):
+        os.mkdir('./values')
+    img = Image.open('./template.png')
+    drawer = ImageDraw.Draw(img)
+    a_bold = ImageFont.truetype('./arialbd.ttf', 50)
+    a_reg = ImageFont.truetype('./arial.ttf', 30)
+    a_bold_big = ImageFont.truetype('./arialbd.ttf', 100)
+    color = (255, 255, 255)
+    draw_centered(drawer, subtitle, img.width / 2, img.height / 2,
+                  a_bold, color)
+    draw_centered(drawer, title, img.width / 2, img.height * 0.3, a_bold_big, color)
+    drawer.text((img.width * 0.05, img.height * 0.86),
+                f'Generated on {datetime.datetime.now().utcnow().strftime("%B %d, %Y at %H:%M:%S")}',
+                font=a_reg, fill=color)
+    drawer.text((img.width * 0.05, img.height * 0.9),
+                f'Powered by ElfHat, an open source project by Gabriel Howe.',
+                font=a_reg, fill=color)
+
+    img.save(location)
+
+
 def main():
     while True:
         for i in names:
@@ -69,42 +91,9 @@ def main():
                 for p in values.keys():
                     first, second = values[p]
                     path = f'./values/{p}.png'
-                    if not ospath.isdir('./values'):
-                        os.mkdir('./values')
-                    if os.path.isfile(path):
-                        img = Image.open('./template.png')
-                        drawer = ImageDraw.Draw(img)
-                        a_bold = ImageFont.truetype('./arialbd.ttf', 50)
-                        a_reg = ImageFont.truetype('./arial.ttf', 30)
-                        a_bold_big = ImageFont.truetype('./arialbd.ttf', 100)
-                        color = (255, 255, 255)
-                        draw_centered(drawer, f'Your people are {first} and {second}.', img.width / 2, img.height / 2,
-                                      a_bold, color)
-                        draw_centered(drawer, f'{p}', img.width / 2, img.height * 0.3, a_bold_big, color)
-                        drawer.text((img.width * 0.05, img.height * 0.86),
-                                    f'Generated on {datetime.datetime.now().utcnow().strftime("%B %d, %Y at %H:%M:%S")}',
-                                    font=a_reg, fill=color)
-                        drawer.text((img.width * 0.05, img.height * 0.9),
-                                    f'Powered by ElfHat, an open source project by Gabriel Howe.',
-                                    font=a_reg, fill=color)
+                    generate_image(p, f'Your people are {first} and {second}', path)
 
-                        img.save(path)
-
-                        # with open(path, 'w+') as file:
-                        #     space_length = 0
-                        #     spaces = ''
-                        #     for e in range(space_length):
-                        #         spaces += '\n'
-                        #
-                        #     file.writelines([spaces,
-                        #                      f'Your people are {first} and {second}.\n',
-                        #                      f'Generated on {datetime.datetime.now().strftime("%B %d, %Y at %H:%M:%S")}.\n',
-                        #                      f'Powered by ElfHat, an open source project by Gabriel Howe.\n'])
-                    else:
-                        with open(path, 'x+') as file:
-                            file.write(f'Your people are: {first} and {second}')
-
-                sys.exit()
+            sys.exit()
 
 
 if __name__ == '__main__':
