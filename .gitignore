@@ -138,3 +138,4 @@ dmypy.json
 cython_debug/
 # intellij idea
 .idea/
+/santa.json
