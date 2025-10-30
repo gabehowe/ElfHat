@@ -49,8 +49,8 @@ def send_elf_mail(target_email, target, target_santees, moderators: list):
     Mystery Man
     """
 
-    image_part, cid = load_image('sscard.png', target, f'Your people are {target_santees[0]} and {target_santees[1]}.',
-                                 f'You have {data["amount"]} for gifts for both of your people that must arrive by christmas day.')
+    image_part, cid = load_image('sscard.png', f'For {target}', f'Your people are {target_santees[0]} and {target_santees[1]}.',
+                                 f'You have {data["amount"]} and 25 days.')
     message = MIMEMultipart("alternative")
     message['To'] = target_email
     message["Subject"] = "Your secret santa card is ready..."
@@ -72,11 +72,11 @@ def send_elf_mail(target_email, target, target_santees, moderators: list):
 
 
 if __name__ == '__main__':
-    with smtplib.SMTP_SSL("smtppro.zoho.com", ssl_port, context=context) as server:
+    with smtplib.SMTP_SSL("smtp.zoho.com", ssl_port, context=context) as server:
         server.login('santa@gabe.how', password)
         print('Logged in?')
         values = generate(data)
         emails = {i[0]: i[1] for i in data['participants']}
         for k, v in values.items():
             send_elf_mail(emails[k], k, list(v), data['moderators'])
-        # send_elf_mail('darkmidnightfury@gmail.com', 'gabe', ['jim', 'joe'], '')
+        # send_elf_mail('darkmidnightfury@gmail.com', 'gabe', ['jim', 'joe'], [["", ""]])

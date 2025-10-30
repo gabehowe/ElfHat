@@ -37,7 +37,7 @@ def draw_centered(draw: ImageDraw, message: str, x: float, y: float, font: FreeT
 
 
 def generate_image(title, subtitle, note):
-    img = Image.open('sscard.png')
+    img: Image = Image.open('sscard.png')
     pen = ImageDraw.Draw(img)
     draw_centered(pen, title, img.width * .5, img.height * .4, ImageFont.truetype('MAIAN.TTF', 90), color=(0, 0, 0))
     draw_centered(pen, subtitle, img.width * .5, img.height * 0.6, ImageFont.truetype('MAIAN.TTF', 60), color=(0, 0, 0))
