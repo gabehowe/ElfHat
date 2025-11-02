@@ -2,6 +2,72 @@ lock-version = "1.0"
 created-by = "pip"
 
 [[packages]]
+name = "contourpy"
+version = "1.3.3"
+
+[[packages.wheels]]
+name = "contourpy-1.3.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/4b/32/e0f13a1c5b0f8572d0ec6ae2f6c677b7991fafd95da523159c19eff0696a/contourpy-1.3.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "4debd64f124ca62069f313a9cb86656ff087786016d76927ae2cf37846b006c9"
+
+[[packages]]
+name = "cycler"
+version = "0.12.1"
+
+[[packages.wheels]]
+name = "cycler-0.12.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30"
+
+[[packages]]
+name = "fonttools"
+version = "4.60.1"
+
+[[packages.wheels]]
+name = "fonttools-4.60.1-cp313-cp313-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/2d/8b/371ab3cec97ee3fe1126b3406b7abd60c8fec8975fd79a3c75cdea0c3d83/fonttools-4.60.1-cp313-cp313-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "b33a7884fabd72bdf5f910d0cf46be50dce86a0362a65cfc746a4168c67eb96c"
+
+[[packages]]
+name = "kiwisolver"
+version = "1.4.9"
+
+[[packages.wheels]]
+name = "kiwisolver-1.4.9-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/e9/e9/f218a2cb3a9ffbe324ca29a9e399fa2d2866d7f348ec3a88df87fc248fc5/kiwisolver-1.4.9-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "b67e6efbf68e077dd71d1a6b37e43e1a99d0bff1a3d51867d45ee8908b931098"
+
+[[packages]]
+name = "matplotlib"
+version = "3.10.7"
+
+[[packages.wheels]]
+name = "matplotlib-3.10.7-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/22/ff/6425bf5c20d79aa5b959d1ce9e65f599632345391381c9a104133fe0b171/matplotlib-3.10.7-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "b3c4ea4948d93c9c29dc01c0c23eef66f2101bf75158c291b88de6525c55c3d1"
+
+[[packages]]
+name = "networkx"
+version = "3.5"
+
+[[packages.wheels]]
+name = "networkx-3.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/eb/8d/776adee7bbf76365fdd7f2552710282c79a4ead5d2a46408c9043a2b70ba/networkx-3.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "0030d386a9a06dee3565298b4a734b68589749a544acbb6c412dc9e2489ec6ec"
+
+[[packages]]
 name = "numpy"
 version = "2.3.4"
 
@@ -11,6 +77,17 @@ url = "https://files.pythonhosted.org/packages/9e/7e/7d306ff7cb143e6d975cfa7eb98
 
 [packages.wheels.hashes]
 sha256 = "fc8a63918b04b8571789688b2780ab2b4a33ab44bfe8ccea36d3eba51228c953"
+
+[[packages]]
+name = "packaging"
+version = "25.0"
+
+[[packages.wheels]]
+name = "packaging-25.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"
 
 [[packages]]
 name = "pillow"
@@ -24,6 +101,28 @@ url = "https://files.pythonhosted.org/packages/38/57/755dbd06530a27a5ed74f8cb0a7
 sha256 = "f4f1231b7dec408e8670264ce63e9c71409d9583dd21d32c163e25213ee2a344"
 
 [[packages]]
+name = "pyparsing"
+version = "3.2.5"
+
+[[packages.wheels]]
+name = "pyparsing-3.2.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/10/5e/1aa9a93198c6b64513c9d7752de7422c06402de6600a8767da1524f9570b/pyparsing-3.2.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "e38a4f02064cf41fe6593d328d0512495ad1f3d8a91c4f73fc401b3079a59a5e"
+
+[[packages]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+
+[[packages.wheels]]
+name = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"
+
+[[packages]]
 name = "python-dotenv"
 version = "1.2.1"
 
@@ -33,3 +132,14 @@ url = "https://files.pythonhosted.org/packages/14/1b/a298b06749107c305e1fe0f814c
 
 [packages.wheels.hashes]
 sha256 = "b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61"
+
+[[packages]]
+name = "six"
+version = "1.17.0"
+
+[[packages.wheels]]
+name = "six-1.17.0-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"

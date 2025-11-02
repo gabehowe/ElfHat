@@ -18,9 +18,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import List, Tuple
 from dotenv import load_dotenv
-load_dotenv()
 
-from randler import generate, generate_image
+from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
+import matplotlib.pyplot as plt
+
+from randler import generate_all_assignments
+import networkx as nx
 
 type email = str
 
@@ -33,6 +37,32 @@ template = Template(open('tem.html').read())
 data = json.load(open('santa.json'))
 
 
+
+def draw_centered(draw: ImageDraw.ImageDraw, message: str, x: float, y: float, font: FreeTypeFont,
+                  color: Tuple[int, int, int] = (255, 0, 0)):
+    _, _, w, h = draw.textbbox((0, 0), message, font=font)
+    draw.text(((x - (w / 2)), (y - (h / 2))), message, font=font, fill=color)
+
+
+def generate_image(title, subtitle, note):
+    img: Image.Image = Image.open('sscard.png')
+    pen = ImageDraw.Draw(img)
+    draw_centered(pen, title, img.width * .5, img.height * .4, ImageFont.truetype('MAIAN.TTF', 90), color=(0, 0, 0))
+    draw_centered(pen, subtitle, img.width * .5, img.height * 0.6, ImageFont.truetype('MAIAN.TTF', 60), color=(0, 0, 0))
+
+    draw_centered(pen, note, img.width * .5, img.height * 0.7, ImageFont.truetype('MAIAN.TTF', 30), color=(0, 0, 0))
+    barr = io.BytesIO()
+    img.save(barr, format='PNG')
+    return barr
+
+def convert_image(img: io.BytesIO) -> Tuple[MIMEBase, str]:
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(img.getvalue())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', f'inline; filename=generated_image.png')
+    cid = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    part.add_header('Content-Id', f'<{cid}>')
+    return part, cid
 
 def build_image(path: os.PathLike, title: str, subtitle: str, note: str) -> Tuple[MIMEBase, str]:
     """
@@ -49,16 +79,7 @@ def build_image(path: os.PathLike, title: str, subtitle: str, note: str) -> Tupl
     """
 
     img = generate_image(title, subtitle, note)
-    barr = io.BytesIO()
-    img.save(barr, format='PNG')
-    part = MIMEBase("application", "octet-stream")
-    part.set_payload(barr.getvalue())
-    filename = os.path.basename(path)
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', f'inline; filename={filename}')
-    cid = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-    part.add_header('Content-Id', f'<{cid}>')
-    return part, cid
+    return convert_image(img)
 
 def create_message(assignments: List[str], amount: str, target: str):
     """ Create a message to place on the image. """
@@ -70,6 +91,17 @@ def create_message(assignments: List[str], amount: str, target: str):
     Mystery Man
     """
 
+def send_email(to, target, subject, from_, cc, content, server):
+    message = MIMEMultipart("alternative")
+    message['To'] = target
+    message["Subject"] = subject
+    message["From"] = from_
+    message['CC'] = cc
+
+
+    for i in content:
+        message.attach(i)
+    server.sendmail(message['From'], to, message.as_string())
 
 
 def send_elf_mail(target_email: email, target: str, assignments: List[str], moderators: List[Tuple[str, email]], server):
@@ -86,34 +118,50 @@ def send_elf_mail(target_email: email, target: str, assignments: List[str], mode
     text = create_message(assignments, data['amount'], target)
     image_part, cid = build_image(Path('sscard.png'), f'For {target}', f'Your people are {assignments[0]} and {assignments[1]}.',
                                  f'You have {data["amount"]} and 25 days.')
-    message = MIMEMultipart("alternative")
-    message['To'] = target_email
-    message["Subject"] = "Your secret santa card is ready..."
-    message["From"] = f'Mystery Man <{os.environ["EMAIL"]}>'
     cc = f'{moderators[0][0]} <{moderators[0][1]}>'
     for i in moderators[1:]:
         cc += f', {i[0]} <{i[1]}>'
-    message['CC'] = cc
     text_part = MIMEText(text)
 
     html = copy(template).template('cid', cid)
     html_part = MIMEText(html, "html")
 
-    message.attach(text_part)
-    message.attach(html_part)
-    message.attach(image_part)
     to = [target_email] + [i[1] for i in moderators]
-    server.sendmail(message['From'], to, message.as_string())
+    send_email(to, target,  "Your secret santa card is ready...", f'Mystery Man <{os.environ["EMAIL"]}>', cc, [text_part, html_part, image_part], server)
 
+def build_graph_rep(values:List[Tuple[str, Tuple[str, str]]]) -> io.BytesIO:
+    graph = {k:list(v) for k,v in values}
+    g = nx.DiGraph(graph)
+    nx.draw(g, with_labels=True, node_color="green", edge_color="red")
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    return buf
+
+
+
+
+
+
+def send_graph_rep(values: List[Tuple[str, Tuple[str, str]]], moderators: List[Tuple[str, email]], server):
+    rep = build_graph_rep(values)
+    img_pt, cid = convert_image(rep)
+    html = copy(template).template('cid', cid)
+    html_part = MIMEText(html, "html")
+
+    to = [i[1] for i in moderators]
+
+    send_email(to, ','.join([f'{ i[0] } <{i[1]}>' for i in moderators]),  "Hey Secret Santa Moderator! Here's an informative graph.", f'Mystery Man <{os.environ["EMAIL"]}>', "", [html_part, img_pt], server)
+    
 
 if __name__ == '__main__':
+    load_dotenv()
     context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL(os.environ['SMTP_URL'], int(os.environ['SSL_PORT']), context=context) as server:
         server.login(os.environ['EMAIL'], os.environ['PASSWORD'])
         print('Logged in?')
-        values = generate(data)
+        values = generate_all_assignments(data)
         emails = {i[0]: i[1] for i in data['participants']}
-        for k, v in values.items():
+        for k, v in values:
             send_elf_mail(emails[k], k, list(v), data['moderators'], server)
         # send_elf_mail('darkmidnightfury@gmail.com', 'gabe', ['jim', 'joe'], [["", ""]])
