@@ -139,3 +139,4 @@ cython_debug/
 # intellij idea
 .idea/
 /santa.json
+.gproj

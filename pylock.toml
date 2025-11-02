@@ -1,0 +1,24 @@
+lock-version = "1.0"
+created-by = "pip"
+
+[[packages]]
+name = "pillow"
+version = "12.0.0"
+
+[[packages.wheels]]
+name = "pillow-12.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/38/57/755dbd06530a27a5ed74f8cb0a7a44a21722ebf318edbe67ddbd7fb28f88/pillow-12.0.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "f4f1231b7dec408e8670264ce63e9c71409d9583dd21d32c163e25213ee2a344"
+
+[[packages]]
+name = "python-dotenv"
+version = "1.2.1"
+
+[[packages.wheels]]
+name = "python_dotenv-1.2.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/14/1b/a298b06749107c305e1fe0f814c6c74aea7b2f1e10989cb30f544a1b3253/python_dotenv-1.2.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61"
