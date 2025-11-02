@@ -16,7 +16,7 @@ Create a `.env` file with the following
 Install requirements from requirements.txt
 
 ```bash
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 Then modify `santa.json` with the following information:
@@ -28,5 +28,5 @@ Then modify `santa.json` with the following information:
 Then run 
 
 ```bash
-py smtp.py
+$ py smtp.py
 ```
