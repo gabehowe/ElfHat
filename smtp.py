@@ -152,7 +152,6 @@ def build_graph_rep(values:List[Tuple[str, Tuple[str, str]]]) -> io.BytesIO:
     for i in range(len(graph)):
         k = i/len(graph)
         colors.append(tuple(((ends[0] * k + ends[1] * ( 1-k ))/255).tolist()))
-    print(colors)
     extent = [i*1.25 for i in [-1,1,-1,1]]
     ax.imshow(mpimg.imread("sscard.png"), extent=extent, aspect='auto')
     nx.draw(g, with_labels=True, node_color="#f2f2f2", edge_color=colors, ax=ax, connectionstyle='arc3,rad=0.1', arrowsize=25)
@@ -169,9 +168,11 @@ def send_assignments(values: List[Tuple[str, tuple[str,str]]], emails: Dict[str,
     Note: This does not cc the moderators with the emails.
     """
 
-    send_graph_rep(values, moderators, server)
     for k, v in values:
+        pass
         send_elf_mail(emails[k], k, list(v), [], server)
+
+    send_graph_rep(values, moderators, server)
 
 
 
@@ -191,7 +192,7 @@ if __name__ == '__main__':
     load_dotenv()
     context = ssl.create_default_context()
 
-    values = generate_all_assignments(data)
+    values = generate_all_assignments({i[0] for i in data['participants']})
     emails = {i[0]: i[1] for i in data['participants']}
 
     with smtplib.SMTP_SSL(os.environ['SMTP_URL'], int(os.environ['SSL_PORT']), context=context) as server:
