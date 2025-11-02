@@ -31,13 +31,18 @@ class TestEmails(unittest.TestCase):
     
 
     def test_graph(self):
-        context = ssl.create_default_context();
-        server = smtplib.SMTP_SSL(os.environ['SMTP_URL'], int(os.environ['SSL_PORT']), context=context)
-        server.login(os.environ['EMAIL'], os.environ['PASSWORD'])
         load_dotenv()
         names = {'Jakob', 'Jason', 'Edward', 'Gottfried', 'Johannes'}
         assignments = randler.generate_all_assignments(names);
-        smtp.send_graph_rep(assignments, [('gabriel', 'darkmidnightfury@gmail.com')], self.server)
+        smtp.send_graph_rep(assignments, [('gabriel', os.environ['TEST_DESTINATION_EMAIL'])], self.server)
+
+    
+    def test_deployment(self):
+        names = {'Jakob', 'Jason', 'Edward', 'Gottfried', 'Johannes'}
+        assignments = randler.generate_all_assignments(names);
+        emails = {i:os.environ['TEST_DESTINATION_EMAIL'] for i in names}
+        smtp.send_assignments(assignments, emails, [('moderator', os.environ['TEST_DESTINATION_EMAIL'])], self.server)
+
 
 class Others(unittest.TestCase):
     def test_names(self):

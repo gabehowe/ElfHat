@@ -16,12 +16,16 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 from dotenv import load_dotenv
+from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 from PIL.ImageFont import FreeTypeFont
+import matplotlib.colors as mcol
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import np
 
 from randler import generate_all_assignments
 import networkx as nx
@@ -115,12 +119,12 @@ def send_elf_mail(target_email: email, target: str, assignments: List[str], mode
         - moderators: (name, email) to additionally send the assignment to.
 
     """
+    now = datetime.now()
+    days_until_christmas = (datetime(now.year, 12, 25) -  datetime.now()).days
     text = create_message(assignments, data['amount'], target)
     image_part, cid = build_image(Path('sscard.png'), f'For {target}', f'Your people are {assignments[0]} and {assignments[1]}.',
-                                 f'You have {data["amount"]} and 25 days.')
-    cc = f'{moderators[0][0]} <{moderators[0][1]}>'
-    for i in moderators[1:]:
-        cc += f', {i[0]} <{i[1]}>'
+                                 f'You have {data["amount"]} and {days_until_christmas} days until christmas!')
+    cc = ','.join(f'{i[0]} <{ i[1] }>' for i in moderators)
     text_part = MIMEText(text)
 
     html = copy(template).template('cid', cid)
@@ -129,20 +133,50 @@ def send_elf_mail(target_email: email, target: str, assignments: List[str], mode
     to = [target_email] + [i[1] for i in moderators]
     send_email(to, target,  "Your secret santa card is ready...", f'Mystery Man <{os.environ["EMAIL"]}>', cc, [text_part, html_part, image_part], server)
 
+
 def build_graph_rep(values:List[Tuple[str, Tuple[str, str]]]) -> io.BytesIO:
+    """ 
+    Create a graph representation of assignments.
+    
+    Args:
+        - values: The assignments as a list of (name, (assignment 1, assignment 2))
+
+    Returns:
+        A byte representation of a PNG image.
+    """
     graph = {k:list(v) for k,v in values}
     g = nx.DiGraph(graph)
-    nx.draw(g, with_labels=True, node_color="green", edge_color="red")
+    fig, ax = plt.subplots()
+    ends = [np.array((0x33,0,0)), np.array((0xb5, 0x4c, 0x4c))]
+    colors = []
+    for i in range(len(graph)):
+        k = i/len(graph)
+        colors.append(tuple(((ends[0] * k + ends[1] * ( 1-k ))/255).tolist()))
+    print(colors)
+    extent = [i*1.25 for i in [-1,1,-1,1]]
+    ax.imshow(mpimg.imread("sscard.png"), extent=extent, aspect='auto')
+    nx.draw(g, with_labels=True, node_color="#f2f2f2", edge_color=colors, ax=ax, connectionstyle='arc3,rad=0.1', arrowsize=25)
     buf = io.BytesIO()
-    plt.savefig(buf, format='png')
+    plt.title("Secret Santa Assignments")
+    fig.savefig(buf, format='png')
     return buf
 
 
+def send_assignments(values: List[Tuple[str, tuple[str,str]]], emails: Dict[str, email], moderators: List[Tuple[str, email]], server):
+    """
+    Send all assignments to all recipients and send the graph representation to the moderators.
 
+    Note: This does not cc the moderators with the emails.
+    """
+
+    send_graph_rep(values, moderators, server)
+    for k, v in values:
+        send_elf_mail(emails[k], k, list(v), [], server)
 
 
 
 def send_graph_rep(values: List[Tuple[str, Tuple[str, str]]], moderators: List[Tuple[str, email]], server):
+    """Send a graph representation of values to moderators."""
     rep = build_graph_rep(values)
     img_pt, cid = convert_image(rep)
     html = copy(template).template('cid', cid)
@@ -157,11 +191,10 @@ if __name__ == '__main__':
     load_dotenv()
     context = ssl.create_default_context()
 
+    values = generate_all_assignments(data)
+    emails = {i[0]: i[1] for i in data['participants']}
+
     with smtplib.SMTP_SSL(os.environ['SMTP_URL'], int(os.environ['SSL_PORT']), context=context) as server:
         server.login(os.environ['EMAIL'], os.environ['PASSWORD'])
-        print('Logged in?')
-        values = generate_all_assignments(data)
-        emails = {i[0]: i[1] for i in data['participants']}
-        for k, v in values:
-            send_elf_mail(emails[k], k, list(v), data['moderators'], server)
+        send_assignments(values, emails, data['moderators'], server)
         # send_elf_mail('darkmidnightfury@gmail.com', 'gabe', ['jim', 'joe'], [["", ""]])
